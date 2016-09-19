@@ -548,11 +548,11 @@ bool CWorkbook::SaveApp() const
             << tag(_T("vt:vector")) << attr(_T("size")) << nSheets + nCharts << attr(_T("baseType")) << _T("lpstr");
 
     for (size_t i = 0; i < nSheets; i++) {
-        xml_stream << tag(_T("vt:lpstr")) << chardata() << m_worksheets[i]->GetTitle().c_str() << endtag();
+        xml_stream << tag(_T("vt:lpstr")) << chardata() << m_worksheets[i]->GetTitle() << endtag();
     }
 
     for (size_t i = 0; i < nCharts; i++) {
-        xml_stream << tag(_T("vt:lpstr")) << chardata() << m_charts[i]->GetTitle().c_str() << endtag();
+        xml_stream << tag(_T("vt:lpstr")) << chardata() << m_charts[i]->GetTitle() << endtag();
     }
 
     xml_stream
@@ -1005,14 +1005,16 @@ _tstring CWorkbook::GetFormatCodeString(const NumFormat &fmt)
 
 	locale loc("");
 	string char_currency = use_facet<moneypunct<char> >(loc).curr_symbol();
-	TCHAR szCurrency[10] = { 0 };
+	char szCurrency[10] = { 0 };
 #ifdef UNICODE
-	int32_t res = wcstombs(szCurrency, char_currency.c_str(), sizeof(szCurrency));
+	std::wstring wsTmp(char_currency.begin(), char_currency.end());
+
+	int32_t res = wcstombs(szCurrency, wsTmp.c_str(), sizeof(szCurrency));
 	if (res == -1) return _T("");
 #else
 	_stprintf(szCurrency, _T("%s"), char_currency.c_str());
 #endif
-	_tstring currency = _tstring(_T("&quot;")) + szCurrency + _T("&quot;");
+	_tstring currency = _tstring(_T("&quot;")) + (TCHAR)szCurrency + _T("&quot;");
 
 	_tstring resCode;
 	_tstring affix;
@@ -1761,7 +1763,7 @@ bool CWorkbook::SaveWorkbook() const
             _stprintf(szId, _T("rId%d"), rId++);
             _stprintf(szPropValue, _T("worksheets/sheet%d.xml"), m_worksheets[i]->GetIndex());
 
-            xml_stream << tag(_T("sheet"))  << attr(_T("name")) << m_worksheets[i]->GetTitle().c_str()
+            xml_stream << tag(_T("sheet"))  << attr(_T("name")) << m_worksheets[i]->GetTitle()
 											<< attr(_T("sheetId")) << sheetId++
 											<< attr(_T("r:id")) << szId << endtag();
 
@@ -1774,7 +1776,7 @@ bool CWorkbook::SaveWorkbook() const
             _stprintf(szId, _T("rId%d"), rId++);
             _stprintf(szPropValue, _T("chartsheets/sheet%d.xml"), m_charts[i]->GetIndex());
 
-            xml_stream << tag(_T("sheet"))  << attr(_T("name")) << m_charts[i]->GetTitle().c_str()
+            xml_stream << tag(_T("sheet"))  << attr(_T("name")) << m_charts[i]->GetTitle()
 											<< attr(_T("sheetId")) << sheetId++
 											<< attr(_T("r:id")) << szId << endtag();
         }
