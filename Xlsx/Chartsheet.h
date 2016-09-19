@@ -115,8 +115,8 @@ private:
 		EGridLines gridLines;	///< gridLines grid detalization
 		EAxisCross cross;		///< cross determines axis position relative to null
 		bool sourceLinked;		///< sourceLinked indicates if axis has at least one linked source
-		_tstring minValue;		///< minValue minimum value for axis (type string is used for generality and processing simplicity)
-		_tstring maxValue;		///< maxValue minimum value for axis (type string is used for generality and processing simplicity)
+		_tstring minValue;		///< minValue minimum value for axis (type std::string is used for generality and processing simplicity)
+		_tstring maxValue;		///< maxValue minimum value for axis (type std::string is used for generality and processing simplicity)
 		int lblSkipInterval;	///< space between two neighbour labels
 		int markSkipInterval;	///< space between two neighbour marks
 		int lblAngle;			///< axis labels angle in degrees
@@ -263,6 +263,7 @@ private:
 	void AddLineChart(Axis& xAxis, uint32_t yAxisId, const std::vector<Series>& series, uint32_t firstSeriesId);
 	void AddBarChart(Axis& xAxis, uint32_t yAxisId, const std::vector<Series>& series, uint32_t firstSeriesId, EBarDirection barDir, EBarGrouping barGroup);
 	void AddScatterChart(uint32_t xAxisId, uint32_t yAxisId, const std::vector<Series>& series, uint32_t firstSeriesId, EScatterStyle style);
+	void AddPieChart(Axis& xAxis, uint32_t yAxisId, const std::vector<Series>& series, uint32_t firstSeriesId);
 };
 
 }	// namespace SimpleXlsx

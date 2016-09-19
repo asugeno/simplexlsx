@@ -66,6 +66,7 @@ enum EChartTypes {
 	CHART_LINEAR = 0,
 	CHART_BAR,
 	CHART_SCATTER,
+	CHART_PIE,
 };
 
 /// @brief  Possible border attributes

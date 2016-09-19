@@ -652,6 +652,73 @@ void CChartsheet::AddBarChart(Axis& xAxis, uint32_t yAxisId, const std::vector<S
     << endtag();
 }
 
+void CChartsheet::AddPieChart(Axis& xAxis, uint32_t yAxisId, const std::vector<Series>& series, uint32_t firstSeriesId)
+{
+	(*m_xmlStream)
+		<< tag(_T("c:pieChart"));
+
+		(*m_xmlStream)
+			<< tag(_T("c:varyColors")) << attr(_T("val")) << 1 << endtag();
+
+
+	for (size_t i = 0; i < series.size(); i++) {
+		const Series &ser = series[i];
+
+		(*m_xmlStream)
+			<< tag(_T("c:ser"))
+			<< tag(_T("c:idx")) << attr(_T("val")) << firstSeriesId << endtag()
+			<< tag(_T("c:order")) << attr(_T("val")) << firstSeriesId << endtag();
+
+		if (ser.title != _T("")) {
+			(*m_xmlStream)
+				<< tag(_T("c:tx")) << tag(_T("c:v")) << chardata() << ser.title.c_str() << endtag() << endtag();
+		}
+
+		TCHAR szRange[100] = { 0 };
+		TCHAR szCellFrom[15] = { 0 };
+		TCHAR szCellTo[15] = { 0 };
+
+		if (ser.catSheet != NULL && (ser.catAxisTo.row != 0 || ser.catAxisTo.col != 0)) {
+			xAxis.sourceLinked = true;
+
+			CWorksheet::GetCellCoord(CellCoord(ser.catAxisFrom.row + 1, ser.catAxisFrom.col), szCellFrom);
+			CWorksheet::GetCellCoord(CellCoord(ser.catAxisTo.row + 1, ser.catAxisTo.col), szCellTo);
+			_stprintf(szRange, _T("'%s'!$%s:$%s"), ser.catSheet->GetTitle().c_str(), szCellFrom, szCellTo);
+
+			(*m_xmlStream)
+				<< tag(_T("c:cat"))
+				<< tag(_T("c:strRef"))
+				<< tag(_T("c:f")) << chardata() << szRange << endtag()
+				<< endtag()
+				<< endtag();
+		}
+
+		CWorksheet::GetCellCoord(CellCoord(ser.valAxisFrom.row + 1, ser.valAxisFrom.col), szCellFrom);
+		CWorksheet::GetCellCoord(CellCoord(ser.valAxisTo.row + 1, ser.valAxisTo.col), szCellTo);
+		_stprintf(szRange, _T("'%s'!$%s:$%s"), ser.valSheet->GetTitle().c_str(), szCellFrom, szCellTo);
+
+		(*m_xmlStream)
+			<< tag(_T("c:val"))
+			<< tag(_T("c:numRef"))
+			<< tag(_T("c:f")) << chardata() << szRange << endtag()
+			<< endtag()
+			<< endtag();
+
+		firstSeriesId++;
+	}
+
+	(*m_xmlStream)
+		<< tag(_T("c:dLbls"))
+		<< tag(_T("c:showVal")) << attr(_T("val")) << 0 << endtag()
+		<< tag(_T("c:showCatName")) << attr(_T("val")) << 1 << endtag()
+		<< tag(_T("c:showSerName")) << attr(_T("val")) << 0 << endtag()
+		<< tag(_T("c:showPercent")) << attr(_T("val")) << 1 << endtag()
+		<< tag(_T("c:showBubbleSize")) << attr(_T("val")) << 0 << endtag()
+		<< tag(_T("c:showLeaderLines")) << attr(_T("val")) << 1 << endtag()
+		<< endtag()
+		<< endtag();
+}
+
 // ****************************************************************************
 /// @brief  Adds scatter chart xml section
 /// @param  xAxisId         id of using x axis
@@ -820,6 +887,10 @@ bool CChartsheet::Save()
 				AddScatterChart(m_xAxis.id, m_yAxis.id, m_seriesSet, 0, m_diagramm.scatterStyle);
 				break;
             }
+			case CHART_PIE: {
+				AddPieChart(m_xAxis, m_yAxis.id, m_seriesSet, 0);
+				break;
+			}
             case CHART_NONE:
             default:
                 return false;
@@ -839,6 +910,10 @@ bool CChartsheet::Save()
 				AddScatterChart(m_xAxis.id, m_yAxis.id, m_seriesSet, (int32_t)m_seriesSet.size(), m_diagramm.scatterStyle);
 				break;
             }
+			case CHART_PIE: {
+				AddPieChart(m_xAxis, m_yAxis.id, m_seriesSet, (int32_t)m_seriesSet.size());
+				break;
+			}
             case CHART_NONE:
             default:
                 break;
@@ -851,6 +926,7 @@ bool CChartsheet::Save()
 				AddYAxis(m_yAxis, m_xAxis.id);
                 break;
             case CHART_SCATTER:
+			case CHART_PIE:
             	AddYAxis(m_xAxis, m_yAxis.id);
 				AddYAxis(m_yAxis, m_xAxis.id);
 				break;
@@ -868,6 +944,7 @@ bool CChartsheet::Save()
 					AddYAxis(m_y2Axis, m_x2Axis.id);
 					break;
 				case CHART_SCATTER:
+				case CHART_PIE:
 					AddYAxis(m_x2Axis, m_y2Axis.id);
 					AddYAxis(m_y2Axis, m_x2Axis.id);
 					break;
