@@ -24,6 +24,7 @@ private:
 	std::map<_tstring, uint64_t>*m_sharedStrings;///< pointer to the list of string supposed to be into shared area
 	std::vector<Comment> 	*m_comments;		///< pointer to the list of comments
 	std::vector<_tstring>	m_mergedCells;		///< list of merged cells` ranges (e.g. A1:B2)
+	std::vector<_tstring>	m_filterCells;
 	int32_t					m_index;            ///< current sheet number
 	_tstring                m_temp_path;        ///< path to the temporary directory (unique for a book)
 	_tstring             	m_title;            ///< page title
@@ -93,6 +94,7 @@ public:
 	void AddRow(const std::vector<CellDataFlt>& data, uint32_t offset = 0, uint32_t height = 0);
 
 	void MergeCells(CellCoord cellFrom, CellCoord cellTo);
+	void filterCells(CellCoord cellFrom, CellCoord cellTo);
 	void GetCurrentCellCoord(CellCoord& currCell);
 
 	bool Save();
