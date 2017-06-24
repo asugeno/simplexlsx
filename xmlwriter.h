@@ -52,6 +52,7 @@ public:
 			endTag(tags.top());
 	}
 
+#ifdef _WIN32
 	XmlStream& operator<<(const _tstring& value)
 	{
 		return PutUtf8String(value);
@@ -67,6 +68,7 @@ public:
 		const _tstring tmp((wchar_t *)value);
 		return PutUtf8String(tmp);
 	}
+#endif
 
 	// default behaviour - delegate object output to std::stream
 	template<class t>
@@ -136,6 +138,7 @@ public:
 		return	*this;
 	}
 
+#ifdef _WIN32
 	XmlStream& PutUtf8String(const _tstring& value)
 	{
 		//calc block size to be returned
@@ -170,6 +173,7 @@ public:
 		}
 		return *this;
 	}
+#endif
 
 private:
 	// state of the stream
@@ -184,7 +188,7 @@ private:
 	bool	prologWritten;
 	_tstringstream	tagName;
 
-	// I don't know any way easier (legal) to clear std::stringstream...
+	// I don't know any way easier (legal) to clear stringstream...
 	inline void clearTagName() {
 		const _tstring	empty_str;
 		tagName.rdbuf()->str(empty_str);

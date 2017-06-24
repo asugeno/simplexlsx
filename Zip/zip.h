@@ -17,7 +17,10 @@
 #define DECLARE_HANDLE(name) struct name##__ { int unused; }; typedef struct name##__ *name
 #define HANDLE void*
 #endif  // _WIN32
-
+#ifdef _MACOSX
+#include <unistd.h>
+#include <fcntl.h>
+#endif
 #ifndef _unzip_H
 DECLARE_HANDLE(HZIP);
 #endif

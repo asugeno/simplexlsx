@@ -977,7 +977,7 @@ void CWorkbook::AddNumberFormats(xmlw::XmlStream& stream) const
 // ****************************************************************************
 /// @brief  Converts numeric format object into its string representation
 /// @param  fmt reference to format to be converted
-/// @return String format code
+/// @return string format code
 // ****************************************************************************
 _tstring CWorkbook::GetFormatCodeString(const NumFormat &fmt)
 {
@@ -1014,8 +1014,11 @@ _tstring CWorkbook::GetFormatCodeString(const NumFormat &fmt)
 #else
 	_stprintf(szCurrency, _T("%s"), char_currency.c_str());
 #endif
+#ifdef _WIN32
 	_tstring currency = _tstring(_T("&quot;")) + (TCHAR)szCurrency + _T("&quot;");
-
+#else
+    _tstring currency = _tstring(_T("&quot;")) + szCurrency + _T("&quot;");
+#endif
 	_tstring resCode;
 	_tstring affix;
 	_tstring digits = _T("0");
@@ -1078,7 +1081,7 @@ _tstring CWorkbook::GetFormatCodeString(const NumFormat &fmt)
 // ****************************************************************************
 /// @brief  Converts numeric format color into its string representation
 /// @param  color color code
-/// @return String color code
+/// @return string color code
 // ****************************************************************************
 _tstring CWorkbook::GetFormatCodeColor(ENumericStyleColor color)
 {

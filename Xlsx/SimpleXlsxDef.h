@@ -44,7 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../tchar.h"
 #endif  // _WIN32
 
-#ifdef _UNICODE
+#ifdef UNICODE
 	typedef std::wofstream 		_tofstream;
 	typedef std::wstring		_tstring;
 	typedef std::wostringstream	_tstringstream;
@@ -54,7 +54,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	typedef std::string			_tstring;
 	typedef std::ostringstream	_tstringstream;
 	typedef std::ostream		_tstream;
-#endif // _UNICODE
+#endif // UNICODE
 
 #define SIMPLE_XLSX_VERSION	_T("0.20")
 
