@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\Xlsx">
+      <UniqueIdentifier>{92b3403b-16bb-408d-9dca-8e79a4b4e7f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Zip">
+      <UniqueIdentifier>{0dfc349e-f574-4665-b1e0-21180a3e2946}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\xmlwriter.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\tchar.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Xlsx\Chartsheet.h">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Xlsx\SimpleXlsxDef.h">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Xlsx\Workbook.h">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Xlsx\Worksheet.h">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Xlsx\XlsxHeaders.h">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Zip\zip.h">
+      <Filter>ソース ファイル\Zip</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Xlsx\Chartsheet.cpp">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Xlsx\Workbook.cpp">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Xlsx\Worksheet.cpp">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Xlsx\XlsxHeaders.cpp">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Zip\zip.cpp">
+      <Filter>ソース ファイル\Zip</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Xlsx\mainpage.dox">
+      <Filter>ソース ファイル\Xlsx</Filter>
+    </None>
+  </ItemGroup>
+</Project>

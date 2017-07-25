@@ -256,7 +256,7 @@ typedef uint32_t IPos; // A Pos is an index in the character window. Pos is used
 //   - creating new Huffman trees less frequently may not provide fast
 //     adaptation to changes in the input data statistics. (Take for
 //     example a binary file with poorly compressible code followed by
-//     a highly compressible string table.) Smaller buffer sizes give
+//     a highly compressible std::string table.) Smaller buffer sizes give
 //     fast adaptation but have of course the overhead of transmitting trees
 //     more frequently.
 //   - I can't count above 4
@@ -279,7 +279,7 @@ typedef uint32_t IPos; // A Pos is an index in the character window. Pos is used
 
 
 // ===========================================================================
-// Local data used by the "bit string" routines.
+// Local data used by the "bit std::string" routines.
 //
 
 #define Buf_size (8 * 2*sizeof(char))
@@ -323,7 +323,7 @@ typedef uint32_t IPos; // A Pos is an index in the character window. Pos is used
 
 
 #define EQUAL 0
-// result of memcmp for equal strings
+// result of memcmp for equal std::strings
 
 
 // ===========================================================================
@@ -336,7 +336,7 @@ typedef uint32_t IPos; // A Pos is an index in the character window. Pos is used
 //   H_SHIFT * MIN_MATCH >= HASH_BITS
 
 #define max_insert_length  max_lazy_match
-// Insert new strings in the hash table only if the match length
+// Insert new std::strings in the hash table only if the match length
 // is not greater than this length. This saves time but degrades compression.
 // max_insert_length is used only for compression levels <= 3.
 
@@ -391,15 +391,15 @@ const config configuration_table[10] = {
 
 
 
-// Data structure describing a single value and its code string.
+// Data structure describing a single value and its code std::string.
 typedef struct ct_data {
     union {
         ush  freq;       // frequency count
-        ush  code;       // bit string
+        ush  code;       // bit std::string
     } fc;
     union {
         ush  dad;        // father node in Huffman tree
-        ush  len;        // length of bit string
+        ush  len;        // length of bit std::string
     } dl;
 } ct_data;
 
@@ -540,8 +540,8 @@ class TDeflateState
   // To do: limit the window size to WSIZE+CBSZ if SMALL_MEM (the code would
   // be less efficient since the data would have to be copied WSIZE/CBSZ times)
   Pos    prev[WSIZE];
-  // Link to older string with same hash index. To limit the size of this
-  // array to 64K, this link is maintained only for the last 32K strings.
+  // Link to older std::string with same hash index. To limit the size of this
+  // array to 64K, this link is maintained only for the last 32K std::strings.
   // An index in this array is thus a window index modulo 32K.
   Pos    head[HASH_SIZE];
   // Heads of the hash chains or NIL. If your compiler thinks that
@@ -558,14 +558,14 @@ class TDeflateState
   int sliding;
   // Set to false when the input file is already in memory
 
-  unsigned ins_h;  // hash index of string to be inserted
+  unsigned ins_h;  // hash index of std::string to be inserted
 
   unsigned int prev_length;
   // Length of the best match at previous step. Matches not greater than this
   // are discarded. This is used in the lazy match evaluation.
 
-  unsigned strstart;         // start of string to insert
-  unsigned match_start; // start of matching string
+  unsigned strstart;         // start of std::string to insert
+  unsigned match_start; // start of matching std::string
   int      eofile;           // flag set at end of input file
   unsigned lookahead;        // number of valid bytes ahead in window
 
@@ -946,7 +946,7 @@ void gen_codes (TState &state, ct_data *tree, int max_code)
 }
 
 /* ===========================================================================
- * Construct one Huffman tree and assigns the code bit strings and lengths.
+ * Construct one Huffman tree and assigns the code bit std::strings and lengths.
  * Update the total bit length for the current block.
  * IN assertion: the field freq is set for all tree elements.
  * OUT assertions: the fields len and code are set to the optimal bit length
@@ -1336,7 +1336,7 @@ int ct_tally (TState &state,int dist, int lc)
  */
 void compress_block(TState &state,ct_data *ltree, ct_data *dtree)
 {
-    unsigned dist;      /* distance of matched string */
+    unsigned dist;      /* distance of matched std::string */
     int lc;             /* match length or unmatched char (if dist == 0) */
     unsigned lx = 0;    /* running index in l_buf */
     unsigned dx = 0;    /* running index in d_buf */
@@ -1396,7 +1396,7 @@ void set_file_type(TState &state)
 
 
 /* ===========================================================================
- * Initialize the bit string routines.
+ * Initialize the bit std::string routines.
  */
 void bi_init (TState &state,char *tgt_buf, unsigned tgt_size, int flsh_allowed)
 {
@@ -1517,8 +1517,8 @@ int  longest_match (TState &state,IPos cur_match);
 #define UPDATE_HASH(h,c) (h = (((h)<<H_SHIFT) ^ (c)) & HASH_MASK)
 
 /* ===========================================================================
- * Insert string s in the dictionary and set match_head to the previous head
- * of the hash chain (the most recent string with same hash key). Return
+ * Insert std::string s in the dictionary and set match_head to the previous head
+ * of the hash chain (the most recent std::string with same hash key). Return
  * the previous length of the hash chain.
  * IN  assertion: all calls to to INSERT_STRING are made with consecutive
  *    input characters and the first MIN_MATCH bytes of s are valid
@@ -1598,12 +1598,12 @@ void lm_init (TState &state, int pack_level, ush *flags)
 
 
 /* ===========================================================================
- * Set match_start to the longest match starting at the given string and
+ * Set match_start to the longest match starting at the given std::string and
  * return its length. Matches shorter or equal to prev_length are discarded,
  * in which case the result is equal to prev_length and match_start is
  * garbage.
  * IN assertions: cur_match is the head of the hash chain for the current
- *   string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
+ *   std::string (strstart) and its distance is <= MAX_DIST, and prev_length >= 1
  */
 // For 80x86 and 680x0 and ARM, an optimized version is in match.asm or
 // match.S. The code is functionally equivalent, so you can use the C version
@@ -1611,13 +1611,13 @@ void lm_init (TState &state, int pack_level, ush *flags)
 int longest_match(TState &state,IPos cur_match)
 {
     unsigned chain_length = state.ds.max_chain_length;   /* max hash chain length */
-    register uch far *scan = state.ds.window + state.ds.strstart; /* current string */
-    register uch far *match;                    /* matched string */
+    register uch far *scan = state.ds.window + state.ds.strstart; /* current std::string */
+    register uch far *match;                    /* matched std::string */
     register int len;                           /* length of current match */
     int best_len = state.ds.prev_length;                 /* best match length so far */
     IPos limit = state.ds.strstart > (IPos)MAX_DIST ? state.ds.strstart - (IPos)MAX_DIST : NIL;
     /* Stop when cur_match becomes <= limit. To simplify the code,
-     * we prevent matches with the string of window index 0.
+     * we prevent matches with the std::string of window index 0.
      */
 
   // The code is optimized for HASH_BITS >= 8 and MAX_MATCH-2 multiple of 16.
@@ -1795,7 +1795,7 @@ void fill_window(TState &state)
 /* ===========================================================================
  * Processes a new input file and return its compressed length. This
  * function does not perform lazy evaluation of matches and inserts
- * new strings in the dictionary only for unmatched strings or for short
+ * new std::strings in the dictionary only for unmatched std::strings or for short
  * matches. It is used only for the fast compression options.
  */
 ulg deflate_fast(TState &state)
@@ -1806,7 +1806,7 @@ ulg deflate_fast(TState &state)
 
     state.ds.prev_length = MIN_MATCH-1;
     while (state.ds.lookahead != 0) {
-        /* Insert the string window[strstart .. strstart+2] in the
+        /* Insert the std::string window[strstart .. strstart+2] in the
          * dictionary, and set hash_head to the head of the hash chain:
          */
         if (state.ds.lookahead >= MIN_MATCH)
@@ -1816,9 +1816,9 @@ ulg deflate_fast(TState &state)
          * At this point we have always match_length < MIN_MATCH
          */
         if (hash_head != NIL && state.ds.strstart - hash_head <= MAX_DIST) {
-            /* To simplify the code, we prevent matches with the string
+            /* To simplify the code, we prevent matches with the std::string
              * of window index 0 (in particular we have to avoid a match
-             * of the string with itself at the start of the input file).
+             * of the std::string with itself at the start of the input file).
              */
             /* Do not look for matches beyond the end of the input.
              * This is necessary to make deflate deterministic.
@@ -1835,12 +1835,12 @@ ulg deflate_fast(TState &state)
 
             state.ds.lookahead -= match_length;
 
-            /* Insert new strings in the hash table only if the match length
+            /* Insert new std::strings in the hash table only if the match length
              * is not too large. This saves time but degrades compression.
              */
             if (match_length <= state.ds.max_insert_length
                 && state.ds.lookahead >= MIN_MATCH) {
-                match_length--; /* string at strstart already in hash table */
+                match_length--; /* std::string at strstart already in hash table */
                 do {
                     state.ds.strstart++;
                     INSERT_STRING(state.ds.strstart, hash_head);
@@ -1867,7 +1867,7 @@ ulg deflate_fast(TState &state)
         /* Make sure that we always have enough lookahead, except
          * at the end of the input file. We need MAX_MATCH bytes
          * for the next match, plus MIN_MATCH bytes to insert the
-         * string following the next match.
+         * std::string following the next match.
          */
         if (state.ds.lookahead < MIN_LOOKAHEAD) fill_window(state);
     }
@@ -1891,7 +1891,7 @@ ulg deflate(TState &state)
 
     /* Process the input block. */
     while (state.ds.lookahead != 0) {
-        /* Insert the string window[strstart .. strstart+2] in the
+        /* Insert the std::string window[strstart .. strstart+2] in the
          * dictionary, and set hash_head to the head of the hash chain:
          */
         if (state.ds.lookahead >= MIN_MATCH)
@@ -1904,9 +1904,9 @@ ulg deflate(TState &state)
 
         if (hash_head != NIL && state.ds.prev_length < state.ds.max_lazy_match &&
             state.ds.strstart - hash_head <= MAX_DIST) {
-            /* To simplify the code, we prevent matches with the string
+            /* To simplify the code, we prevent matches with the std::string
              * of window index 0 (in particular we have to avoid a match
-             * of the string with itself at the start of the input file).
+             * of the std::string with itself at the start of the input file).
              */
             /* Do not look for matches beyond the end of the input.
              * This is necessary to make deflate deterministic.
@@ -1932,7 +1932,7 @@ ulg deflate(TState &state)
             check_match(state,state.ds.strstart-1, prev_match, state.ds.prev_length);
             flush = ct_tally(state,state.ds.strstart-1-prev_match, state.ds.prev_length - MIN_MATCH);
 
-            /* Insert in hash table all strings up to the end of the match.
+            /* Insert in hash table all std::strings up to the end of the match.
              * strstart-1 and strstart are already inserted.
              */
             state.ds.lookahead -= state.ds.prev_length-1;
@@ -1974,7 +1974,7 @@ ulg deflate(TState &state)
         /* Make sure that we always have enough lookahead, except
          * at the end of the input file. We need MAX_MATCH bytes
          * for the next match, plus MIN_MATCH bytes to insert the
-         * string following the next match.
+         * std::string following the next match.
          */
         if (state.ds.lookahead < MIN_LOOKAHEAD) fill_window(state);
     }
@@ -2249,8 +2249,12 @@ ZRESULT GetFileInfo(HANDLE hf, ulg *attr, long *size, iztimes *times, ulg *times
 #else
   TCHAR szLink[MAX_PATH] = { 0 };
   TCHAR fn[MAX_PATH] = { 0 };
+#ifdef _MACOSX
+  if (fcntl(fileno((FILE*)hf), F_GETPATH, fn) == -1) return ZR_NOFILE;
+#else
   _stprintf(szLink, _T("/proc/self/fd/%d"), fileno((FILE*)hf));
   if (readlink(szLink, fn, sizeof(fn)) == -1) return ZR_NOFILE;
+#endif
 
   struct stat s;
   int res=stat(fn,&s);

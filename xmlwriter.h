@@ -3,6 +3,9 @@
 
 #include	<stack>
 #include	<sstream>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #include	"Xlsx/SimpleXlsxDef.h"
 
@@ -48,6 +51,24 @@ public:
 		while (tags.size())
 			endTag(tags.top());
 	}
+
+#ifdef _WIN32
+	XmlStream& operator<<(const _tstring& value)
+	{
+		return PutUtf8String(value);
+	}
+
+	XmlStream& operator<<(_tstring& value)
+	{
+		return PutUtf8String(value);
+	}
+
+	XmlStream& operator<<(const TCHAR* value)
+	{
+		const _tstring tmp((wchar_t *)value);
+		return PutUtf8String(tmp);
+	}
+#endif
 
 	// default behaviour - delegate object output to std::stream
 	template<class t>
@@ -117,6 +138,43 @@ public:
 		return	*this;
 	}
 
+#ifdef _WIN32
+	XmlStream& PutUtf8String(const _tstring& value)
+	{
+		//calc block size to be returned
+		int valueLength = value.length() * MB_CUR_MAX + 1;
+		char *mbs = new char[valueLength];
+		wcstombs(mbs, value.c_str(), valueLength);
+		int len = MultiByteToWideChar(CP_ACP, NULL, mbs, valueLength, NULL, 0);
+
+		//malloc and fill the returned block
+		wchar_t* szUnicode = new wchar_t[len + 1];
+
+		MultiByteToWideChar(CP_ACP, NULL, mbs, valueLength, szUnicode, len);
+		szUnicode[len] = 0;
+		std::wstring tempVal = szUnicode;
+		delete[] szUnicode;
+
+		int nInputLen = tempVal.length();
+		int nChars = WideCharToMultiByte(CP_UTF8, 0, tempVal.c_str(), nInputLen, NULL, 0, NULL, NULL);
+		if (nChars)
+		{
+			char* pszUTF8 = new char[nChars + 1];
+			nChars = WideCharToMultiByte(CP_UTF8, 0, tempVal.c_str(), nInputLen, pszUTF8, nChars, NULL, NULL);
+			if (nChars)
+			{
+				pszUTF8[nChars] = '\0';
+
+				if (stateTagName == state)
+					tagName << pszUTF8;
+				s << pszUTF8;
+			}
+			delete[] pszUTF8;
+		}
+		return *this;
+	}
+#endif
+
 private:
 	// state of the stream
 	typedef	enum {stateNone, stateTag, stateAttribute, stateTagName}	state_type;
@@ -130,7 +188,7 @@ private:
 	bool	prologWritten;
 	_tstringstream	tagName;
 
-	// I don't know any way easier (legal) to clear std::stringstream...
+	// I don't know any way easier (legal) to clear stringstream...
 	inline void clearTagName() {
 		const _tstring	empty_str;
 		tagName.rdbuf()->str(empty_str);

@@ -157,6 +157,7 @@ void CWorksheet::Init(uint32_t index, uint32_t frozenWidth, uint32_t frozenHeigh
     m_sharedStrings = NULL;
     m_comments = NULL;
     m_mergedCells.clear();
+	m_filterCells.clear();
     m_row_index = 0;
     m_page_orientation = PAGE_PORTRAIT;
 
@@ -620,6 +621,23 @@ void CWorksheet::MergeCells(CellCoord cellFrom, CellCoord cellTo)
 	m_mergedCells.push_back(szRange);
 }
 
+void CWorksheet::filterCells(CellCoord cellFrom, CellCoord cellTo)
+{
+	if (cellFrom.row == 0 || cellTo.row == 0) return;
+	if (cellFrom.row - cellTo.row != 0)return;
+
+	TCHAR szCellFrom[15] = { 0 };
+	TCHAR szCellTo[15] = { 0 };
+
+	GetCellCoord(cellFrom, szCellFrom);
+	GetCellCoord(cellTo, szCellTo);
+
+	TCHAR szRange[30] = { 0 };
+	_stprintf(szRange, _T("%s:%s"), szCellFrom, szCellTo);
+
+	m_filterCells.push_back(szRange);
+}
+
 // ****************************************************************************
 ///	@brief	Receives next to write cell`s coordinates
 /// @param	currCell (row value from 1, col value from 0)
@@ -663,6 +681,11 @@ void CWorksheet::GetCellCoord(CellCoord cell, TCHAR *szCoord)
 bool CWorksheet::Save()
 {
     (*m_xmlStream) << endtag(); // close sheetData tag
+
+	//<autoFilter ref="A1:D1"/>
+	for (size_t i = 0; i < m_filterCells.size(); i++) {
+		(*m_xmlStream) << tag(_T("autoFilter")) << attr(_T("ref")) << m_filterCells[i].c_str() << endtag();
+	}
 
 	if (!m_mergedCells.empty()) {
         (*m_xmlStream) << tag(_T("mergeCells")) << attr(_T("count")) << m_mergedCells.size();

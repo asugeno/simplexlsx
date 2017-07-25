@@ -263,6 +263,7 @@ private:
 	void AddLineChart(Axis& xAxis, uint32_t yAxisId, const std::vector<Series>& series, uint32_t firstSeriesId);
 	void AddBarChart(Axis& xAxis, uint32_t yAxisId, const std::vector<Series>& series, uint32_t firstSeriesId, EBarDirection barDir, EBarGrouping barGroup);
 	void AddScatterChart(uint32_t xAxisId, uint32_t yAxisId, const std::vector<Series>& series, uint32_t firstSeriesId, EScatterStyle style);
+	void AddPieChart(Axis& xAxis, uint32_t yAxisId, const std::vector<Series>& series, uint32_t firstSeriesId);
 };
 
 }	// namespace SimpleXlsx
